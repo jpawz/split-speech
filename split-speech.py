@@ -8,27 +8,35 @@ equal to previous piece of sound duration.
 """
 
 import sys
+import argparse
 from pydub import AudioSegment
 from pydub.silence import detect_silence
 
+parser = argparse.ArgumentParser()
+parser.add_argument("input", help="input mp3 file")
+parser.add_argument("output", help="resulting mp3 file")
+parser.add_argument(
+    "-s",
+    type=int,
+    default=100,
+    metavar="SILENCE_LENGTH",
+    help="minimu silence length in miliseconds (default 100)")
+parser.add_argument(
+    "-n",
+    type=int,
+    default=500,
+    metavar="SOUND_LENGTH",
+    help="minimu sound length in miliseconds (default 500)")
 
+args = parser.parse_args()
 
-if len(sys.argv) < 3:
-    print("not enough parameters")
-    print("usage: python split-speech.py INPUT.MP3 OUTPUT.MP3 [a] [b]")
-    print(" a: minimum silence length in miliseconds (default 100)")
-    print(" b: minimum sound length in miliseconds (default 500)")
-    exit()
-elif len(sys.argv) == 4:
-    min_sil_length = int(sys.argv[3])
-elif len(sys.argv) == 5:
-    min_sil_length = int(sys.argv[3])
-    min_sound_len = int(sys.argv[4])
-else:
-    min_sil_length = 100
-    min_sound_len = 500
+input_file = args.input
+output_file = args.output
 
-sound_file = AudioSegment.from_mp3(sys.argv[1])
+min_sil_length = args.s
+min_sound_len = args.n
+
+sound_file = AudioSegment.from_mp3(input_file)
 silences = detect_silence(
     sound_file, min_silence_len=min_sil_length, silence_thresh=-40)
 resulting_sound = AudioSegment.empty()
@@ -45,4 +53,4 @@ for i in range(len(silences) - 1, 0, -1):
           resulting_sound
         silence_len = silence_len + (silences[i][1] - silences[i - 1][0])
 
-resulting_sound.export(sys.argv[2], format="mp3")
+resulting_sound.export(output_file, format="mp3")
