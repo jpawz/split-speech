@@ -35,6 +35,14 @@ parser.add_argument(
     help=
     "set silence length as percentage of previous sound duration (default 100)"
 )
+parser.add_argument(
+    "-t",
+    type=int,
+    default=-50,
+    metavar="T",
+    help=
+    "threshold for silence (dB) (default -50): below this level sound is counted as silence"
+)
 
 args = parser.parse_args()
 
@@ -44,10 +52,11 @@ output_file = args.output
 min_sil_length = args.s
 min_sound_len = args.n
 sil_percentage = args.p / 100
+sil_threshold = args.t
 
 sound_file = AudioSegment.from_mp3(input_file)
 silences = detect_silence(
-    sound_file, min_silence_len=min_sil_length, silence_thresh=-40)
+    sound_file, min_silence_len=min_sil_length, silence_thresh=sil_threshold)
 resulting_sound = AudioSegment.empty()
 
 silence_len = 0
