@@ -1,8 +1,8 @@
 """
-Looks for pauses in sound file and streches the pauses
-to give time for repeating previous pice of speech.
+Looks for pauses in sound file and stretches the pauses
+to give time for repeating previous piece of speech.
 The purpose of this script was to prepare sound file
-for pronunciation exercises (repeting speech) for
+for pronunciation exercises (repeating speech) for
 foreign language practice. The pause duration is
 equal to previous piece of sound duration.
 """
@@ -20,13 +20,13 @@ parser.add_argument(
     type=int,
     default=100,
     metavar="SILENCE_LENGTH",
-    help="minimu silence length in miliseconds (default 100)")
+    help="minimum silence length in milliseconds (default 100)")
 parser.add_argument(
     "-n",
     type=int,
     default=500,
     metavar="SOUND_LENGTH",
-    help="minimu sound length in miliseconds (default 500)")
+    help="minimum sound length in milliseconds (default 500)")
 
 args = parser.parse_args()
 
