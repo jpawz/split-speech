@@ -19,14 +19,22 @@ parser.add_argument(
     "-s",
     type=int,
     default=100,
-    metavar="SILENCE_LENGTH",
+    metavar="S",
     help="minimum silence length in milliseconds (default 100)")
 parser.add_argument(
     "-n",
     type=int,
     default=500,
-    metavar="SOUND_LENGTH",
+    metavar="N",
     help="minimum sound length in milliseconds (default 500)")
+parser.add_argument(
+    "-p",
+    type=int,
+    default=100,
+    metavar="P",
+    help=
+    "set silence length as percentage of previous sound duration (default 100)"
+)
 
 args = parser.parse_args()
 
@@ -35,6 +43,7 @@ output_file = args.output
 
 min_sil_length = args.s
 min_sound_len = args.n
+sil_percentage = args.p / 100
 
 sound_file = AudioSegment.from_mp3(input_file)
 silences = detect_silence(
@@ -46,7 +55,7 @@ for i in range(len(silences) - 1, 0, -1):
     if (silences[i][0] - silences[i - 1][1]) > min_sound_len:
         silence_len = silence_len + (silences[i][1] - silences[i - 1][0])
         resulting_sound = sound_file[silences[i-1][0]:silences[i][1]] + \
-          AudioSegment.silent(silence_len) + resulting_sound
+          AudioSegment.silent(int(round(silence_len * sil_percentage))) + resulting_sound
         silence_len = 0
     else:
         resulting_sound = sound_file[silences[i - 1][0]:silences[i][1]] + \
