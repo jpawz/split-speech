@@ -70,5 +70,6 @@ for i in range(len(silences) - 1, 0, -1):
         resulting_sound = sound_file[silences[i - 1][0]:silences[i][1]] + \
           resulting_sound
         silence_len = silence_len + (silences[i][1] - silences[i - 1][0])
-
+resulting_sound = sound_file[:silences[0][0]] + AudioSegment.silent(
+    int(round(silences[0][0] * sil_percentage))) + resulting_sound
 resulting_sound.export(output_file, format="mp3")
