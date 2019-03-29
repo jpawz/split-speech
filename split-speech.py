@@ -44,6 +44,16 @@ parser.add_argument(
     "threshold for silence (dB) (default -50): below this level sound is counted as silence"
 )
 
+parser.add_argument(
+    "-a",
+    type=int,
+    nargs="?",
+    default="2000",
+    metavar="A",
+    help=
+    "detect threshold: provide value for desired sound length (in milliseconds)"
+)
+
 args = parser.parse_args()
 
 input_file = args.input
@@ -55,8 +65,20 @@ sil_percentage = args.p / 100
 sil_threshold = args.t
 
 sound_file = AudioSegment.from_mp3(input_file)
-silences = detect_silence(
-    sound_file, min_silence_len=min_sil_length, silence_thresh=sil_threshold)
+
+if args.a is not None:
+    desired_sound_len = args.a
+    min_number_of_chunks = int(len(sound_file) / desired_sound_len)
+    detected_chunks = 0
+    min_sil_length = 100
+    sil_threshold = -58
+    while detected_chunks <= min_number_of_chunks:
+        sil_threshold += 1
+        silences = detect_silence(sound_file, min_silence_len=min_sil_length, silence_thresh=sil_threshold)
+        detected_chunks = len(silences)
+else:
+    silences = detect_silence(sound_file, min_silence_len=min_sil_length, silence_thresh=sil_threshold)
+
 resulting_sound = AudioSegment.empty()
 
 silence_len = 0
