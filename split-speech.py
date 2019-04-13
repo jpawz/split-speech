@@ -3,8 +3,7 @@ Looks for pauses in sound file and stretches the pauses
 to give time for repeating previous piece of speech.
 The purpose of this script was to prepare sound file
 for pronunciation exercises (repeating speech) for
-foreign language practice. The pause duration is
-equal to previous piece of sound duration.
+foreign language practice.
 """
 
 import sys
@@ -68,14 +67,23 @@ sound_file = AudioSegment.from_mp3(input_file)
 
 if args.a is not None:
     desired_sound_len = args.a
-    min_number_of_chunks = int(len(sound_file) / desired_sound_len)
+    one_minute = 60 * 1000
     detected_chunks = 0
-    min_sil_length = 100
-    sil_threshold = -58
-    while detected_chunks <= min_number_of_chunks:
-        sil_threshold += 1
-        silences = detect_silence(sound_file, min_silence_len=min_sil_length, silence_thresh=sil_threshold)
-        detected_chunks = len(silences)
+    initial_sil_threshold = -60 
+    if(len(sound_file) > 2 * one_minute):
+        sound_probe = sound_file[one_minute:2 * one_minute]
+        min_number_of_chunks = int(len(sound_probe) / desired_sound_len)
+        while detected_chunks <= min_number_of_chunks:
+            initial_sil_threshold += 1
+            silences_in_probe = detect_silence(sound_probe, min_silence_len=min_sil_length, silence_thresh=initial_sil_threshold)
+            detected_chunks = len(silences_in_probe)
+        silences = detect_silence(sound_file, min_silence_len=min_sil_length, silence_thresh=initial_sil_threshold)
+    else:
+        min_number_of_chunks = int(len(sound_file) / desired_sound_len)
+        while detected_chunks <= min_number_of_chunks:
+            initial_sil_threshold += 1
+            silences = detect_silence(sound_file, min_silence_len=min_sil_length, silence_thresh=initial_sil_threshold)
+            detected_chunks = len(silences)
 else:
     silences = detect_silence(sound_file, min_silence_len=min_sil_length, silence_thresh=sil_threshold)
 
