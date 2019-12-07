@@ -53,6 +53,14 @@ parser.add_argument(
     "detect threshold: provide value for desired sound length (in milliseconds)"
 )
 
+parser.add_argument(
+    "-m",
+    type=int,
+    default=None,
+    metavar="M",
+    help="do not add pause after sound longer than length in milliseconds"
+)
+
 args = parser.parse_args()
 
 input_file = args.input
@@ -60,6 +68,7 @@ output_file = args.output
 
 min_sil_length = args.s
 min_sound_len = args.n
+max_sound_len = args.m
 sil_percentage = args.p / 100
 sil_threshold = args.t
 
@@ -67,7 +76,6 @@ sound_file = AudioSegment.from_mp3(input_file)
 
 if args.a is not None:
     desired_sound_len = args.a
-    min_sil_length = args.a
     one_minute = 60 * 1000
     detected_chunks = 0
     initial_sil_threshold = -60 
@@ -93,7 +101,9 @@ resulting_sound = AudioSegment.empty()
 silence_len = 0
 last_chunk_index = len(silences) - 1
 for i in range(len(silences) - 1, 0, -1):
-    if (silences[last_chunk_index][0] - silences[i - 1][1]) > min_sound_len:
+    if args.m is not None and silences[i][0] - silences[i - 1][1] > max_sound_len:
+        resulting_sound = sound_file[silences[i-1][0]:silences[i][1]] + resulting_sound
+    elif (silences[last_chunk_index][0] - silences[i - 1][1]) > min_sound_len:
         silence_len = silence_len + (silences[i][1] - silences[i - 1][0])
         resulting_sound = sound_file[silences[i-1][0]:silences[i][1]] + \
           AudioSegment.silent(int(round(silence_len * sil_percentage))) + resulting_sound
