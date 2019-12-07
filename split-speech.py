@@ -11,7 +11,9 @@ import argparse
 from pydub import AudioSegment
 from pydub.silence import detect_silence
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+    prog='split-speech', description='extends silences to give time for repetition'
+)
 parser.add_argument("input", help="input mp3 file")
 parser.add_argument("output", help="resulting mp3 file")
 parser.add_argument(
