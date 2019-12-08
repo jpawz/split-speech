@@ -20,19 +20,19 @@ parser.add_argument(
     "-s",
     type=int,
     default=100,
-    metavar="S",
+    metavar="ms",
     help="minimum silence length in milliseconds (default 100)")
 parser.add_argument(
     "-n",
     type=int,
     default=500,
-    metavar="N",
+    metavar="ms",
     help="minimum sound length in milliseconds (default 500)")
 parser.add_argument(
     "-p",
     type=int,
     default=100,
-    metavar="P",
+    metavar="%",
     help=
     "set silence length as percentage of previous sound duration (default 100)"
 )
@@ -40,7 +40,7 @@ parser.add_argument(
     "-t",
     type=int,
     default=-50,
-    metavar="T",
+    metavar="dB",
     help=
     "threshold for silence (dB) (default -50): below this level sound is counted as silence"
 )
@@ -50,7 +50,7 @@ parser.add_argument(
     type=int,
     nargs="?",
     default=None,
-    metavar="A",
+    metavar="ms",
     help=
     "detect threshold: provide value for desired sound length (in milliseconds)"
 )
@@ -59,7 +59,7 @@ parser.add_argument(
     "-m",
     type=int,
     default=None,
-    metavar="M",
+    metavar="ms",
     help="do not add pause after sound longer than length in milliseconds"
 )
 
