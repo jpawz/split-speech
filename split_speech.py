@@ -118,3 +118,13 @@ for i in range(len(silences) - 1, 0, -1):
 resulting_sound = sound_file[:silences[0][0]] + AudioSegment.silent(
     int(round(silences[0][0] * sil_percentage))) + resulting_sound
 resulting_sound.export(output_file, format="mp3")
+
+def get_silences(sound_file, automatic_mode=False):
+    if automatic_mode:
+        silences=  detect_silences_treshold()
+    else:
+        silences = detect_silence(sound_file, min_silence_len=min_sil_length, silence_thresh=sil_threshold)
+
+    return silences
+
+    
