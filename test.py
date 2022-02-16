@@ -16,10 +16,10 @@ class TestSplitSpeech(unittest.TestCase):
         Test if finds three silences.
         """
         sample = AudioSegment.from_file("sample.mp3", format="mp3")
-
+        number_of_silences = 3
         silences = get_silences(sample)
 
-        self.assertEquals(len(silences), 3)
+        self.assertEqual(len(silences), number_of_silences, f"Should be {number_of_silences}")
 
     def test_output_file_have_proper_length(self):
         """

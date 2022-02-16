@@ -13,8 +13,8 @@ from pydub.silence import detect_silence
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog='split-speech', description='extends silences to give time for repetition'
-    )
+        prog='split-speech',
+        description='extends silences to give time for repetition')
     parser.add_argument("input", help="input mp3 file")
     parser.add_argument("output", help="resulting mp3 file")
     parser.add_argument(
@@ -61,71 +61,86 @@ if __name__ == "__main__":
         type=int,
         default=None,
         metavar="ms",
-        help="do not add pause after sound longer than length in milliseconds"
-    )
+        help="do not add pause after sound longer than length in milliseconds")
 
     args = parser.parse_args()
 
-input_file = args.input
-output_file = args.output
+    input_file = args.input
+    output_file = args.output
 
-min_sil_length = args.s
-min_sound_len = args.n
-max_sound_len = args.m
-sil_percentage = args.p / 100
-sil_threshold = args.t
+    min_sil_length = args.s
+    min_sound_len = args.n
+    max_sound_len = args.m
+    sil_percentage = args.p / 100
+    sil_threshold = args.t
 
-sound_file = AudioSegment.from_mp3(input_file)
+    sound_file = AudioSegment.from_mp3(input_file)
 
-if args.a is not None:
-    desired_sound_len = args.a
-    one_minute = 60 * 1000
-    detected_chunks = 0
-    initial_sil_threshold = -60 
-    if(len(sound_file) > 2 * one_minute):
-        sound_probe = sound_file[one_minute:2 * one_minute]
-        min_number_of_chunks = int(len(sound_probe) / desired_sound_len)
-        while detected_chunks <= min_number_of_chunks:
-            initial_sil_threshold += 1
-            silences_in_probe = detect_silence(sound_probe, min_silence_len=min_sil_length, silence_thresh=initial_sil_threshold)
-            detected_chunks = len(silences_in_probe)
-        silences = detect_silence(sound_file, min_silence_len=min_sil_length, silence_thresh=initial_sil_threshold)
+    if args.a is not None:
+        desired_sound_len = args.a
+        one_minute = 60 * 1000
+        detected_chunks = 0
+        initial_sil_threshold = -60
+        if (len(sound_file) > 2 * one_minute):
+            sound_probe = sound_file[one_minute:2 * one_minute]
+            min_number_of_chunks = int(len(sound_probe) / desired_sound_len)
+            while detected_chunks <= min_number_of_chunks:
+                initial_sil_threshold += 1
+                silences_in_probe = detect_silence(
+                    sound_probe,
+                    min_silence_len=min_sil_length,
+                    silence_thresh=initial_sil_threshold)
+                detected_chunks = len(silences_in_probe)
+            silences = detect_silence(sound_file,
+                                      min_silence_len=min_sil_length,
+                                      silence_thresh=initial_sil_threshold)
+        else:
+            min_number_of_chunks = int(len(sound_file) / desired_sound_len)
+            while detected_chunks <= min_number_of_chunks:
+                initial_sil_threshold += 1
+                silences = detect_silence(sound_file,
+                                          min_silence_len=min_sil_length,
+                                          silence_thresh=initial_sil_threshold)
+                detected_chunks = len(silences)
     else:
-        min_number_of_chunks = int(len(sound_file) / desired_sound_len)
-        while detected_chunks <= min_number_of_chunks:
-            initial_sil_threshold += 1
-            silences = detect_silence(sound_file, min_silence_len=min_sil_length, silence_thresh=initial_sil_threshold)
-            detected_chunks = len(silences)
-else:
-    silences = detect_silence(sound_file, min_silence_len=min_sil_length, silence_thresh=sil_threshold)
+        silences = detect_silence(sound_file,
+                                  min_silence_len=min_sil_length,
+                                  silence_thresh=sil_threshold)
 
-resulting_sound = AudioSegment.empty()
+    resulting_sound = AudioSegment.empty()
 
-silence_len = 0
-last_chunk_index = len(silences) - 1
-for i in range(len(silences) - 1, 0, -1):
-    if args.m is not None and silences[i][0] - silences[i - 1][1] > max_sound_len:
-        resulting_sound = sound_file[silences[i-1][0]:silences[i][1]] + resulting_sound
-    elif (silences[last_chunk_index][0] - silences[i - 1][1]) > min_sound_len:
-        silence_len = silence_len + (silences[i][1] - silences[i - 1][0])
-        resulting_sound = sound_file[silences[i-1][0]:silences[i][1]] + \
-          AudioSegment.silent(int(round(silence_len * sil_percentage))) + resulting_sound
-        silence_len = 0
-        last_chunk_index = i
-    else:
-        resulting_sound = sound_file[silences[i - 1][0]:silences[i][1]] + \
-          resulting_sound
-        silence_len = silence_len + (silences[i][1] - silences[i - 1][0])
-resulting_sound = sound_file[:silences[0][0]] + AudioSegment.silent(
-    int(round(silences[0][0] * sil_percentage))) + resulting_sound
-resulting_sound.export(output_file, format="mp3")
+    silence_len = 0
+    last_chunk_index = len(silences) - 1
+    for i in range(len(silences) - 1, 0, -1):
+        if args.m is not None and silences[i][0] - silences[
+                i - 1][1] > max_sound_len:
+            resulting_sound = sound_file[
+                silences[i - 1][0]:silences[i][1]] + resulting_sound
+        elif (silences[last_chunk_index][0] -
+              silences[i - 1][1]) > min_sound_len:
+            silence_len = silence_len + (silences[i][1] - silences[i - 1][0])
+            resulting_sound = sound_file[silences[i-1][0]:silences[i][1]] + \
+            AudioSegment.silent(int(round(silence_len * sil_percentage))) + resulting_sound
+            silence_len = 0
+            last_chunk_index = i
+        else:
+            resulting_sound = sound_file[silences[i - 1][0]:silences[i][1]] + \
+            resulting_sound
+            silence_len = silence_len + (silences[i][1] - silences[i - 1][0])
+    resulting_sound = sound_file[:silences[0][0]] + AudioSegment.silent(
+        int(round(silences[0][0] * sil_percentage))) + resulting_sound
+    resulting_sound.export(output_file, format="mp3")
 
-def get_silences(sound_file, automatic_mode=False):
+
+def get_silences(sound_file,
+                 automatic_mode=False,
+                 minimum_silence_length=100,
+                 silence_threshold=-50):
     if automatic_mode:
-        silences=  detect_silences_treshold()
+        silences = detect_silences_treshold()
     else:
-        silences = detect_silence(sound_file, min_silence_len=min_sil_length, silence_thresh=sil_threshold)
+        silences = detect_silence(sound_file,
+                                  min_silence_len=minimum_silence_length,
+                                  silence_thresh=silence_threshold)
 
     return silences
-
-    
