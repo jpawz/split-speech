@@ -11,59 +11,60 @@ import argparse
 from pydub import AudioSegment
 from pydub.silence import detect_silence
 
-parser = argparse.ArgumentParser(
-    prog='split-speech', description='extends silences to give time for repetition'
-)
-parser.add_argument("input", help="input mp3 file")
-parser.add_argument("output", help="resulting mp3 file")
-parser.add_argument(
-    "-s",
-    type=int,
-    default=100,
-    metavar="ms",
-    help="minimum silence length in milliseconds (default 100)")
-parser.add_argument(
-    "-n",
-    type=int,
-    default=500,
-    metavar="ms",
-    help="minimum sound length in milliseconds (default 500)")
-parser.add_argument(
-    "-p",
-    type=int,
-    default=100,
-    metavar="%",
-    help=
-    "set silence length as percentage of previous sound duration (default 100)"
-)
-parser.add_argument(
-    "-t",
-    type=int,
-    default=-50,
-    metavar="dB",
-    help=
-    "threshold for silence (dB) (default -50): below this level sound is counted as silence"
-)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog='split-speech', description='extends silences to give time for repetition'
+    )
+    parser.add_argument("input", help="input mp3 file")
+    parser.add_argument("output", help="resulting mp3 file")
+    parser.add_argument(
+        "-s",
+        type=int,
+        default=100,
+        metavar="ms",
+        help="minimum silence length in milliseconds (default 100)")
+    parser.add_argument(
+        "-n",
+        type=int,
+        default=500,
+        metavar="ms",
+        help="minimum sound length in milliseconds (default 500)")
+    parser.add_argument(
+        "-p",
+        type=int,
+        default=100,
+        metavar="%",
+        help=
+        "set silence length as percentage of previous sound duration (default 100)"
+    )
+    parser.add_argument(
+        "-t",
+        type=int,
+        default=-50,
+        metavar="dB",
+        help=
+        "threshold for silence (dB) (default -50): below this level sound is counted as silence"
+    )
 
-parser.add_argument(
-    "-a",
-    type=int,
-    nargs="?",
-    default=None,
-    metavar="ms",
-    help=
-    "detect threshold: provide value for desired sound length (in milliseconds)"
-)
+    parser.add_argument(
+        "-a",
+        type=int,
+        nargs="?",
+        default=None,
+        metavar="ms",
+        help=
+        "detect threshold: provide value for desired sound length (in milliseconds)"
+    )
 
-parser.add_argument(
-    "-m",
-    type=int,
-    default=None,
-    metavar="ms",
-    help="do not add pause after sound longer than length in milliseconds"
-)
+    parser.add_argument(
+        "-m",
+        type=int,
+        default=None,
+        metavar="ms",
+        help="do not add pause after sound longer than length in milliseconds"
+    )
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
 input_file = args.input
 output_file = args.output
