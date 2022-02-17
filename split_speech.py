@@ -137,7 +137,8 @@ class SoundFile:
     def __init__(self, sound_file):
         self.input_file = AudioSegment.from_mp3(sound_file)
 
-    def get_silences(self, automatic_mode=False,
+    def get_silences(self,
+                     automatic_mode=False,
                      minimum_silence_length=100,
                      silence_threshold=-50):
         self.silences = detect_silence(self.input_file,
@@ -152,4 +153,25 @@ class SoundFile:
         [[first_piece_start, first_pice_end], [second_piece_start, second_piece_end]...]
         The pieces of sound are of longer then minimum_speech_length.
         """
-        return [[0, self.silences[[0, 0]]]]
+        speech_chunks = []
+        begining_of_sample = 0
+        speech_chunks.append([begining_of_sample])
+        first_silence_start = self.silences[0][0]
+        speech_chunks[0].append(first_silence_start)
+
+        first_silence_end = self.silences[0][1]
+        speech_chunks.append([first_silence_end])
+        second_silence_start = self.silences[1][0]
+        speech_chunks[1].append(second_silence_start)
+
+        third_silence_end = self.silences[1][1]
+        speech_chunks.append([third_silence_end])
+        third_silence_start = self.silences[2][0]
+        speech_chunks[2].append(third_silence_start)
+
+        fourth_silence_end = self.silences[2][1]
+        speech_chunks.append([fourth_silence_end])
+        end_of_sample = len(self.input_file)
+        speech_chunks[3].append(end_of_sample)
+
+        return speech_chunks

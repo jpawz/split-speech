@@ -27,15 +27,25 @@ class TestSplitSpeech(unittest.TestCase):
     def test_get_correct_chunk_length(self):
         """
         Test if gets the correct length of speech (not silence). After the chunk
-        will be added some length of silence.
+        will be added some length of silence. Chunks are [[1407, 1912], [3397, 3945], [5426, 5876]]
+        Sample length = 7628ms
         """
-        first_chunk_length = 1407  # milliseconds
+        first_chunk_length = 1407 - 0  # milliseconds, first silence start - beginning of sample
+        second_chunk_length = 3397 - 1912  # milliseconds, second silence start - first silence end
+        third_chunk_length = 5426 - 3945  # milliseconds, third silence start - second silence end
+        fourth_chunk_length = 7628 - 5876  # milliseconds sample length - third silence end
         silences = self.sample.get_silences()
 
         chunks = self.sample.get_speech_chunks()
-        chunk_length = chunks[[0, 1]] - chunks[[0, 0]]
+        first_length = chunks[0][1] - chunks[0][0]
+        second_length = chunks[1][1] - chunks[1][0]
+        third_length = chunks[2][1] - chunks[2][0]
+        fourth_length = chunks[3][1] - chunks[3][0]
 
-        self.assertEqual(first_chunk_length, chunk_length)
+        self.assertEqual(first_chunk_length, first_length)
+        self.assertEqual(second_chunk_length, second_length)
+        self.assertEqual(third_chunk_length, third_length)
+        self.assertEqual(fourth_chunk_length, fourth_length)
 
     @unittest.skip("not yet implemented")
     def test_output_file_have_proper_length(self):
