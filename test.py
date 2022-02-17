@@ -6,37 +6,36 @@ Length of the sample.mp3 is 7628ms.
 
 import unittest
 from pydub import AudioSegment
-from split_speech import get_silences
-from split_speech import get_speech_chunks
+from split_speech import SoundFile
 
 
 class TestSplitSpeech(unittest.TestCase):
 
     def setUp(self):
-        self.sample = AudioSegment.from_file("sample.mp3", format="mp3")
+        self.sample = SoundFile("sample.mp3")
 
     def test_should_detect_three_silences(self):
         """
         Test if finds three silences.
         """
         number_of_silences = 3
-        silences = get_silences(self.sample)
+        silences = self.sample.get_silences()
 
-        self.assertEqual(len(silences), number_of_silences, f"Should be {number_of_silences}")
+        self.assertEqual(len(silences), number_of_silences,
+                         f"Should be {number_of_silences}")
 
     def test_get_correct_chunk_length(self):
         """
         Test if gets the correct length of speech (not silence). After the chunk
         will be added some length of silence.
         """
-        first_chunk_length = 1407 # milliseconds
-        silences = get_silences(self.sample)
+        first_chunk_length = 1407  # milliseconds
+        silences = self.sample.get_silences()
 
-        chunks = get_speech_chunks(self.sample, silences)
+        chunks = self.sample.get_speech_chunks()
         chunk_length = chunks[[0, 1]] - chunks[[0, 0]]
 
         self.assertEqual(first_chunk_length, chunk_length)
-
 
     @unittest.skip("not yet implemented")
     def test_output_file_have_proper_length(self):
@@ -51,7 +50,7 @@ class TestSplitSpeech(unittest.TestCase):
         Test that the script will find four gaps in sample file
         """
         pass
-    
+
     @unittest.skip("not yet implemented")
     def test_parameters_properly_assigned(self):
         """

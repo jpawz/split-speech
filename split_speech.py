@@ -132,23 +132,24 @@ if __name__ == "__main__":
     resulting_sound.export(output_file, format="mp3")
 
 
-def get_silences(sound_file,
-                 automatic_mode=False,
-                 minimum_silence_length=100,
-                 silence_threshold=-50):
-    if automatic_mode:
-        silences = detect_silences_treshold()
-    else:
-        silences = detect_silence(sound_file,
-                                  min_silence_len=minimum_silence_length,
-                                  silence_thresh=silence_threshold)
+class SoundFile:
 
-    return silences
+    def __init__(self, sound_file):
+        self.input_file = AudioSegment.from_mp3(sound_file)
 
-def get_speech_chunks(sound_file, silences, minimum_speech_length=2000):
-    """
-    Get two dimensional array of speech starts and stops withing given sound_file.
-    [[first_piece_start, first_pice_end], [second_piece_start, second_piece_end]...]
-    The pieces of sound are of longer then minimum_speech_length.
-    """
-    return None
+    def get_silences(self, automatic_mode=False,
+                     minimum_silence_length=100,
+                     silence_threshold=-50):
+        self.silences = detect_silence(self.input_file,
+                                       min_silence_len=minimum_silence_length,
+                                       silence_thresh=silence_threshold)
+
+        return self.silences
+
+    def get_speech_chunks(self, minimum_speech_length=2000):
+        """
+        Get two dimensional array of speech starts and stops withing given sound_file.
+        [[first_piece_start, first_pice_end], [second_piece_start, second_piece_end]...]
+        The pieces of sound are of longer then minimum_speech_length.
+        """
+        return None
