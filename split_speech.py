@@ -152,4 +152,4 @@ class SoundFile:
         [[first_piece_start, first_pice_end], [second_piece_start, second_piece_end]...]
         The pieces of sound are of longer then minimum_speech_length.
         """
-        return None
+        return [[0, self.silences[[0, 0]]]]
