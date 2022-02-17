@@ -144,3 +144,11 @@ def get_silences(sound_file,
                                   silence_thresh=silence_threshold)
 
     return silences
+
+def get_speech_chunks(sound_file, silences, minimum_speech_length=2000):
+    """
+    Get two dimensional array of speech starts and stops withing given sound_file.
+    [[first_piece_start, first_pice_end], [second_piece_start, second_piece_end]...]
+    The pieces of sound are of longer then minimum_speech_length.
+    """
+    return None

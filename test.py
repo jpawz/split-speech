@@ -7,32 +7,52 @@ Length of the sample.mp3 is 7628ms.
 import unittest
 from pydub import AudioSegment
 from split_speech import get_silences
+from split_speech import get_speech_chunks
 
 
 class TestSplitSpeech(unittest.TestCase):
+
+    def setUp(self):
+        self.sample = AudioSegment.from_file("sample.mp3", format="mp3")
 
     def test_should_detect_three_silences(self):
         """
         Test if finds three silences.
         """
-        sample = AudioSegment.from_file("sample.mp3", format="mp3")
         number_of_silences = 3
-        silences = get_silences(sample)
+        silences = get_silences(self.sample)
 
         self.assertEqual(len(silences), number_of_silences, f"Should be {number_of_silences}")
 
+    def test_get_correct_chunk_length(self):
+        """
+        Test if gets the correct length of speech (not silence). After the chunk
+        will be added some length of silence.
+        """
+        first_chunk_length = 1407 # milliseconds
+        silences = get_silences(self.sample)
+
+        chunks = get_speech_chunks(self.sample, silences)
+        chunk_length = chunks[[0, 1]] - chunks[[0, 0]]
+
+        self.assertEqual(first_chunk_length, chunk_length)
+
+
+    @unittest.skip("not yet implemented")
     def test_output_file_have_proper_length(self):
         """
         Test if resulting file have proper length. With the default
         parameters, after the conversion the length should be ms.
         """
 
+    @unittest.skip("not yet implemented")
     def test_split_sample_file(self):
         """
         Test that the script will find four gaps in sample file
         """
         pass
-
+    
+    @unittest.skip("not yet implemented")
     def test_parameters_properly_assigned(self):
         """
         Test if parameters passed to the script are properly assigned
