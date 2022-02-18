@@ -136,11 +136,12 @@ class SoundFile:
 
     def __init__(self, sound_file):
         self.input_file = AudioSegment.from_mp3(sound_file)
+        
 
     def detect_silences(self,
-                     automatic_mode=False,
-                     minimum_silence_length=100,
-                     silence_threshold=-50):
+                        automatic_mode=False,
+                        minimum_silence_length=100,
+                        silence_threshold=-50):
         self.silences = detect_silence(self.input_file,
                                        min_silence_len=minimum_silence_length,
                                        silence_thresh=silence_threshold)
@@ -172,7 +173,7 @@ class SoundFile:
 
         return self.speech_chunks
 
-    def extend_silences(percentage_of_speech):
+    def extend_silences(self, percentage_of_speech=100):
         """
         Inserts after a speech piece silence of percentage_of_speech length.
         E.g. if the piece is 1500ms length and the percentage_of_speech = 100,
@@ -180,3 +181,11 @@ class SoundFile:
         """
         self.resulting_sound = AudioSegment.empty()
         
+        for i in range(len(self.speech_chunks)):
+            beggining_of_chunk = self.speech_chunks[i][0]
+            end_of_chunk = self.speech_chunks[i][1]
+            chunk_length = end_of_chunk - beggining_of_chunk
+            silence_length = chunk_length * percentage_of_speech / 100
+            self.resulting_sound = self.resulting_sound + self.input_file[
+                beggining_of_chunk:end_of_chunk] + AudioSegment.silent(
+                    silence_length)

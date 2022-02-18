@@ -34,7 +34,7 @@ class TestSplitSpeech(unittest.TestCase):
         Test if finds three silences.
         """
         number_of_silences = 3
-        silences = self.sample.get_silences()
+        silences = self.sample.detect_silences()
 
         self.assertEqual(len(silences), number_of_silences,
                          f"Should be {number_of_silences}")
@@ -44,7 +44,7 @@ class TestSplitSpeech(unittest.TestCase):
         Test if gets the correct length of speech (not silence). After the chunk
         will be added some length of silence. 
         """
-        silences = self.sample.get_silences()
+        silences = self.sample.detect_silences()
 
         chunks = self.sample.generate_speech_chunks()
         first_length = chunks[0][1] - chunks[0][0]
@@ -61,15 +61,22 @@ class TestSplitSpeech(unittest.TestCase):
         """
         Test if resulting audio have proper length.
         """
-        percentage_of_speech = 100
-        resulting_length = self.end_of_sample + (self.end_of_sample *
-                                                 percentage_of_speech / 100)
+        one_hundred_percent = 100
+        two_hundred_percent = 200
+        all_chunks_length = self.first_chunk_length + self.second_chunk_length + self.third_chunk_length + self.fourth_chunk_length
+        resulting_length_100_percentage = (
+            all_chunks_length * one_hundred_percent / 100) + all_chunks_length
+        resulting_length_200_percentage = (
+            all_chunks_length * two_hundred_percent / 100) + all_chunks_length
 
         self.sample.detect_silences()
         self.sample.generate_speech_chunks()
-        self.sample.extend_silences()
 
-        self.assertEqual(len(self.sample.resulting_sound), resulting_length)
+        self.sample.extend_silences(one_hundred_percent)
+        self.assertEqual(len(self.sample.resulting_sound), resulting_length_100_percentage)
+
+        self.sample.extend_silences(two_hundred_percent)
+        self.assertEqual(len(self.sample.resulting_sound), resulting_length_200_percentage)
 
     @unittest.skip("not yet implemented")
     def test_parameters_properly_assigned(self):
