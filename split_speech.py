@@ -137,7 +137,7 @@ class SoundFile:
     def __init__(self, sound_file):
         self.input_file = AudioSegment.from_mp3(sound_file)
 
-    def get_silences(self,
+    def detect_silences(self,
                      automatic_mode=False,
                      minimum_silence_length=100,
                      silence_threshold=-50):
@@ -147,27 +147,36 @@ class SoundFile:
 
         return self.silences
 
-    def get_speech_chunks(self, minimum_speech_length=2000):
+    def generate_speech_chunks(self, minimum_speech_length=2000):
         """
         Get two dimensional array of speech starts and stops withing given sound_file.
         [[first_piece_start, first_pice_end], [second_piece_start, second_piece_end]...]
         The pieces of sound are of longer then minimum_speech_length.
         """
-        speech_chunks = []
+        self.speech_chunks = []
         begining_of_sample = 0
-        speech_chunks.append([begining_of_sample])
+        self.speech_chunks.append([begining_of_sample])
         first_silence_start = self.silences[0][0]
-        speech_chunks[0].append(first_silence_start)
+        self.speech_chunks[0].append(first_silence_start)
 
         for i in range(1, len(self.silences), 1):
             current_silence_end = self.silences[i - 1][1]
             next_silence_begining = self.silences[i][0]
-            speech_chunks.append([current_silence_end])
-            speech_chunks[i].append(next_silence_begining)
+            self.speech_chunks.append([current_silence_end])
+            self.speech_chunks[i].append(next_silence_begining)
 
         last_silence_end = self.silences[2][1]
-        speech_chunks.append([last_silence_end])
+        self.speech_chunks.append([last_silence_end])
         end_of_sample = len(self.input_file)
-        speech_chunks[3].append(end_of_sample)
+        self.speech_chunks[3].append(end_of_sample)
 
-        return speech_chunks
+        return self.speech_chunks
+
+    def extend_silences(percentage_of_speech):
+        """
+        Inserts after a speech piece silence of percentage_of_speech length.
+        E.g. if the piece is 1500ms length and the percentage_of_speech = 100,
+        it inserts a 1500ms long silence after the speech piece.
+        """
+        self.resulting_sound = AudioSegment.empty()
+        

@@ -43,12 +43,10 @@ class TestSplitSpeech(unittest.TestCase):
         """
         Test if gets the correct length of speech (not silence). After the chunk
         will be added some length of silence. 
-        Sample length = 7628ms
         """
-
         silences = self.sample.get_silences()
 
-        chunks = self.sample.get_speech_chunks()
+        chunks = self.sample.generate_speech_chunks()
         first_length = chunks[0][1] - chunks[0][0]
         second_length = chunks[1][1] - chunks[1][0]
         third_length = chunks[2][1] - chunks[2][0]
@@ -59,12 +57,19 @@ class TestSplitSpeech(unittest.TestCase):
         self.assertEqual(self.third_chunk_length, third_length)
         self.assertEqual(self.fourth_chunk_length, fourth_length)
 
-    @unittest.skip("not yet implemented")
-    def test_output_file_have_proper_length(self):
+    def test_resulting_audio_have_proper_length(self):
         """
-        Test if resulting file have proper length. With the default
-        parameters, after the conversion the length should be ms.
+        Test if resulting audio have proper length.
         """
+        percentage_of_speech = 100
+        resulting_length = self.end_of_sample + (self.end_of_sample *
+                                                 percentage_of_speech / 100)
+
+        self.sample.detect_silences()
+        self.sample.generate_speech_chunks()
+        self.sample.extend_silences()
+
+        self.assertEqual(len(self.sample.resulting_sound), resulting_length)
 
     @unittest.skip("not yet implemented")
     def test_parameters_properly_assigned(self):
