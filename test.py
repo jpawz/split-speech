@@ -11,6 +11,21 @@ from split_speech import SoundFile
 
 class TestSplitSpeech(unittest.TestCase):
 
+    # Detected silences: [[1407, 1912], [3397, 3945], [5426, 5876]]
+    # all values are in milliseconds
+    begining_of_sample = 0
+    end_of_sample = 7628
+    first_silence_start = 1407
+    first_silence_end = 1912
+    second_silence_start = 3397
+    second_silence_end = 3945
+    third_silence_start = 5426
+    third_silence_end = 5876
+    first_chunk_length = first_silence_start - begining_of_sample
+    second_chunk_length = second_silence_start - first_silence_end
+    third_chunk_length = third_silence_start - second_silence_end
+    fourth_chunk_length = end_of_sample - third_silence_end
+
     def setUp(self):
         self.sample = SoundFile("sample.mp3")
 
@@ -27,13 +42,10 @@ class TestSplitSpeech(unittest.TestCase):
     def test_get_correct_chunk_length(self):
         """
         Test if gets the correct length of speech (not silence). After the chunk
-        will be added some length of silence. Chunks are [[1407, 1912], [3397, 3945], [5426, 5876]]
+        will be added some length of silence. 
         Sample length = 7628ms
         """
-        first_chunk_length = 1407 - 0  # milliseconds, first silence start - beginning of sample
-        second_chunk_length = 3397 - 1912  # milliseconds, second silence start - first silence end
-        third_chunk_length = 5426 - 3945  # milliseconds, third silence start - second silence end
-        fourth_chunk_length = 7628 - 5876  # milliseconds sample length - third silence end
+
         silences = self.sample.get_silences()
 
         chunks = self.sample.get_speech_chunks()
@@ -42,10 +54,10 @@ class TestSplitSpeech(unittest.TestCase):
         third_length = chunks[2][1] - chunks[2][0]
         fourth_length = chunks[3][1] - chunks[3][0]
 
-        self.assertEqual(first_chunk_length, first_length)
-        self.assertEqual(second_chunk_length, second_length)
-        self.assertEqual(third_chunk_length, third_length)
-        self.assertEqual(fourth_chunk_length, fourth_length)
+        self.assertEqual(self.first_chunk_length, first_length)
+        self.assertEqual(self.second_chunk_length, second_length)
+        self.assertEqual(self.third_chunk_length, third_length)
+        self.assertEqual(self.fourth_chunk_length, fourth_length)
 
     @unittest.skip("not yet implemented")
     def test_output_file_have_proper_length(self):
@@ -53,13 +65,6 @@ class TestSplitSpeech(unittest.TestCase):
         Test if resulting file have proper length. With the default
         parameters, after the conversion the length should be ms.
         """
-
-    @unittest.skip("not yet implemented")
-    def test_split_sample_file(self):
-        """
-        Test that the script will find four gaps in sample file
-        """
-        pass
 
     @unittest.skip("not yet implemented")
     def test_parameters_properly_assigned(self):
