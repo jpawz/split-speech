@@ -180,7 +180,7 @@ class SoundFile:
         it inserts a 1500ms long silence after the speech piece.
         """
         self.resulting_sound = AudioSegment.empty()
-        
+
         for i in range(len(self.speech_chunks)):
             beggining_of_chunk = self.speech_chunks[i][0]
             end_of_chunk = self.speech_chunks[i][1]
@@ -189,3 +189,11 @@ class SoundFile:
             self.resulting_sound = self.resulting_sound + self.input_file[
                 beggining_of_chunk:end_of_chunk] + AudioSegment.silent(
                     silence_length)
+
+    def write_resulting_file(self, file_name):
+        """
+        Exports resulting file to file_name.
+        """
+        with open(file_name, "wb") as f:
+            self.resulting_sound.export(f, format="mp3")
+        

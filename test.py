@@ -4,7 +4,9 @@ four sentences of Zen of Python.
 Length of the sample.mp3 is 7628ms.
 """
 
+import os
 import unittest
+import pathlib
 from pydub import AudioSegment
 from split_speech import SoundFile
 
@@ -28,6 +30,11 @@ class TestSplitSpeech(unittest.TestCase):
 
     def setUp(self):
         self.sample = SoundFile("sample.mp3")
+        self.output_file_name = "sample_ext.mp3"
+        self.path_to_output_file = pathlib.Path("./" + self.output_file_name)
+
+    def tearDown(self):
+        self.path_to_output_file.unlink(missing_ok=True)
 
     def test_should_detect_three_silences(self):
         """
@@ -73,10 +80,24 @@ class TestSplitSpeech(unittest.TestCase):
         self.sample.generate_speech_chunks()
 
         self.sample.extend_silences(one_hundred_percent)
-        self.assertEqual(len(self.sample.resulting_sound), resulting_length_100_percentage)
+        self.assertEqual(len(self.sample.resulting_sound),
+                         resulting_length_100_percentage)
 
         self.sample.extend_silences(two_hundred_percent)
-        self.assertEqual(len(self.sample.resulting_sound), resulting_length_200_percentage)
+        self.assertEqual(len(self.sample.resulting_sound),
+                         resulting_length_200_percentage)
+
+    def test_exports_resulting_sound(self):
+        """
+        Test if resulting sound is exported.
+        """
+        self.sample.detect_silences()
+        self.sample.generate_speech_chunks()
+        self.sample.extend_silences()
+
+        self.sample.write_resulting_file(self.output_file_name)
+
+        self.assertEqual((str(self.path_to_output_file), self.path_to_output_file.is_file()), (str(self.path_to_output_file), True))
 
     @unittest.skip("not yet implemented")
     def test_parameters_properly_assigned(self):
