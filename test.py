@@ -97,14 +97,9 @@ class TestSplitSpeech(unittest.TestCase):
 
         self.sample.write_resulting_file(self.output_file_name)
 
-        self.assertEqual((str(self.path_to_output_file), self.path_to_output_file.is_file()), (str(self.path_to_output_file), True))
-
-    @unittest.skip("not yet implemented")
-    def test_parameters_properly_assigned(self):
-        """
-        Test if parameters passed to the script are properly assigned
-        """
-        pass
+        self.assertEqual((str(
+            self.path_to_output_file), self.path_to_output_file.is_file()),
+                         (str(self.path_to_output_file), True))
 
 
 if __name__ == "__main__ ":

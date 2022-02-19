@@ -139,7 +139,6 @@ class SoundFile:
         
 
     def detect_silences(self,
-                        automatic_mode=False,
                         minimum_silence_length=100,
                         silence_threshold=-50):
         self.silences = detect_silence(self.input_file,
@@ -152,7 +151,6 @@ class SoundFile:
         """
         Get two dimensional array of speech starts and stops withing given sound_file.
         [[first_piece_start, first_pice_end], [second_piece_start, second_piece_end]...]
-        The pieces of sound are of longer then minimum_speech_length.
         """
         self.speech_chunks = []
         begining_of_sample = 0
