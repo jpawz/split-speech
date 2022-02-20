@@ -20,13 +20,16 @@ class SoundFile:
     def detect_silences(self,
                         minimum_silence_length=100,
                         silence_threshold=-50):
+        """
+        Seeks silences of the minimum length. Silence is detected by the given threshold value.
+        """
         self.silences = detect_silence(self.input_file,
                                        min_silence_len=minimum_silence_length,
                                        silence_thresh=silence_threshold)
 
         return self.silences
 
-    def generate_speech_chunks(self):
+    def generate_speech_chunks(self, minimum_sentence_length=100):
         """
         Get two dimensional array of speech starts and stops withing given sound_file.
         [[first_piece_start, first_pice_end], [second_piece_start, second_piece_end]...]

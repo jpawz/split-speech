@@ -101,6 +101,23 @@ class TestSplitSpeech(unittest.TestCase):
             self.path_to_output_file), self.path_to_output_file.is_file()),
                          (str(self.path_to_output_file), True))
 
+class TestTooShortSpeech(unittest.TestCase):
+
+    def test_ignore_too_short_speech(self):
+        """
+        Too short speech should not be splitted. The sample file
+        contains four sentences but one is too short so three pieces
+        should be detected. The short sentence is 1053ms long.
+        """
+        sample = SoundFile("sample_with_short_sentence.mp3")
+        minimum_sentence_length = 1200 # milliseconds
+        number_of_sentences_with_minimum_length = 3
+
+        silences = sample.detect_silences()
+        speech_pieces = sample.generate_speech_chunks()
+
+        self.assertEqual(len(speech_pieces), number_of_sentences_with_minimum_length)
+
 
 if __name__ == "__main__ ":
     unittest.main()
