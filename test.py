@@ -66,14 +66,15 @@ class TestSplitSpeech(unittest.TestCase):
 
     def test_resulting_audio_have_proper_length(self):
         """
-        Test if resulting audio have proper length.
+        Test if resulting audio have proper length. It means test if it's
+        extended by a specified percentage of speech length.
         """
         one_hundred_percent = 100
         two_hundred_percent = 200
         all_chunks_length = self.first_chunk_length + self.second_chunk_length + self.third_chunk_length + self.fourth_chunk_length
-        resulting_length_100_percentage = (
+        resulting_length_extended_100_percentage = (
             all_chunks_length * one_hundred_percent / 100) + all_chunks_length
-        resulting_length_200_percentage = (
+        resulting_length_extended_200_percentage = (
             all_chunks_length * two_hundred_percent / 100) + all_chunks_length
 
         self.sample.detect_silences()
@@ -81,15 +82,15 @@ class TestSplitSpeech(unittest.TestCase):
 
         self.sample.extend_silences(one_hundred_percent)
         self.assertEqual(len(self.sample.resulting_sound),
-                         resulting_length_100_percentage)
+                         resulting_length_extended_100_percentage)
 
         self.sample.extend_silences(two_hundred_percent)
         self.assertEqual(len(self.sample.resulting_sound),
-                         resulting_length_200_percentage)
+                         resulting_length_extended_200_percentage)
 
     def test_exports_resulting_sound(self):
         """
-        Test if resulting sound is exported.
+        Test if resulting sound is exported to file.
         """
         self.sample.detect_silences()
         self.sample.generate_speech_chunks()
