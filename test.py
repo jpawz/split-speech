@@ -29,7 +29,7 @@ class TestSplitSpeech(unittest.TestCase):
     fourth_chunk_length = end_of_sample - third_silence_end
 
     def setUp(self):
-        self.sample = SoundFile("sample.mp3")
+        self.sample = SoundFile("./test_data/sample.mp3")
         self.output_file_name = "sample_ext.mp3"
         self.path_to_output_file = pathlib.Path("./" + self.output_file_name)
 
@@ -109,7 +109,7 @@ class TestTooShortSpeech(unittest.TestCase):
         contains four sentences but one is too short so three pieces
         should be detected. The short sentence is 1053ms long.
         """
-        sample = SoundFile("sample_with_short_sentence.mp3")
+        sample = SoundFile("./test_data/sample_with_short_sentence.mp3")
         minimum_sentence_length = 1200 # milliseconds
         number_of_sentences_with_minimum_length = 3
 
