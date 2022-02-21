@@ -114,7 +114,7 @@ class TestTooShortSpeech(unittest.TestCase):
         number_of_sentences_with_minimum_length = 3
 
         silences = sample.detect_silences()
-        speech_pieces = sample.generate_speech_chunks()
+        speech_pieces = sample.generate_speech_chunks(minimum_sentence_length=minimum_sentence_length)
 
         self.assertEqual(len(speech_pieces), number_of_sentences_with_minimum_length)
 

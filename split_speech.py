@@ -38,11 +38,15 @@ class SoundFile:
         begining_of_sample = 0
         self.speech_chunks.append([begining_of_sample])
 
-        for i in range(len(self.silences)):
-            current_silence_begining = self.silences[i][0]
-            current_silence_end = self.silences[i][1]
-            self.speech_chunks[i].append(current_silence_begining)
-            self.speech_chunks.append([current_silence_end])
+        index = 0
+        for silence in self.silences:
+            current_silence_begining = silence[0]
+            current_silence_end = silence[1]
+            current_speech_chunk_beggining = self.speech_chunks[index][0]
+            if current_silence_begining - current_speech_chunk_beggining >= minimum_sentence_length:
+                self.speech_chunks[index].append(current_silence_begining)
+                self.speech_chunks.append([current_silence_end])
+                index += 1
 
         end_of_sample = len(self.input_file)
         self.speech_chunks[-1].append(end_of_sample)
