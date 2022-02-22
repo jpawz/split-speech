@@ -8,6 +8,7 @@ import os
 import unittest
 import pathlib
 from pydub import AudioSegment
+from pydub.silence import detect_silence
 from split_speech import SoundFile
 
 
@@ -134,6 +135,20 @@ class TestTooShortSpeech(unittest.TestCase):
             len(speech_pieces), number_of_sentences_with_minimum_length,
             f"There should be {number_of_sentences_with_minimum_length} sentences with at least {minimum_sentence_length}ms length detected."
         )
+
+
+class TestLeadingAndTrailingSilences(unittest.TestCase):
+
+    def test_ignore_leading_silence(self):
+        """
+        Silence from the beggining and end of the audio should be ignored.
+        There are three sentences in the test data, so there are two silences between them.
+        """
+        sample = SoundFile("./test_data/sample_lead_trail_sil.mp3")
+
+        silences_without_leading_and_trailing = sample.detect_silences()
+
+        self.assertEqual(len(silences_without_leading_and_trailing), 2, "Without leading and trailing, there are two silences in the sample.")
 
 
 if __name__ == "__main__ ":

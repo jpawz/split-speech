@@ -27,6 +27,9 @@ class SoundFile:
                                        min_silence_len=minimum_silence_length,
                                        silence_thresh=silence_threshold)
 
+        self.delete_leading_silence()
+        self.delete_trailing_silence()
+
         return self.silences
 
     def generate_speech_chunks(self, minimum_sentence_length=100):
@@ -43,7 +46,8 @@ class SoundFile:
             current_silence_begining = silence[0]
             current_silence_end = silence[1]
             current_speech_chunk_beggining = self.speech_chunks[index][0]
-            if current_silence_begining - current_speech_chunk_beggining >= minimum_sentence_length:
+            current_speech_chunk_length = current_silence_begining - current_speech_chunk_beggining
+            if current_speech_chunk_length >= minimum_sentence_length:
                 self.speech_chunks[index].append(current_silence_begining)
                 self.speech_chunks.append([current_silence_end])
                 index += 1
@@ -76,6 +80,21 @@ class SoundFile:
         """
         with open(file_name, "wb") as f:
             self.resulting_sound.export(f, format="mp3")
+
+    def delete_leading_silence(self):
+        """
+        Remove leading silence from silences list.
+        """
+        if self.silences[0][0] == 0:
+            del self.silences[0]
+
+    def delete_trailing_silence(self):
+        """
+        Remove trailing silence from silences list.
+        """
+        length_of_input_file = len(self.input_file)
+        if self.silences[-1][1] == length_of_input_file:
+            del self.silences[-1]
 
 
 if __name__ == "__main__":
