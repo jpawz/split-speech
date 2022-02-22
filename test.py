@@ -43,8 +43,10 @@ class TestSplitSpeech(unittest.TestCase):
         number_of_silences = 3
         silences = self.sample.detect_silences()
 
-        self.assertEqual(len(silences), number_of_silences,
-                         f"Should be {number_of_silences}")
+        self.assertEqual(
+            len(silences), number_of_silences,
+            f"The sample contains four sentences, so there should be {number_of_silences} silences between them."
+        )
 
     def test_get_correct_chunk_length(self):
         """
@@ -59,10 +61,14 @@ class TestSplitSpeech(unittest.TestCase):
         third_length = chunks[2][1] - chunks[2][0]
         fourth_length = chunks[3][1] - chunks[3][0]
 
-        self.assertEqual(self.first_chunk_length, first_length)
-        self.assertEqual(self.second_chunk_length, second_length)
-        self.assertEqual(self.third_chunk_length, third_length)
-        self.assertEqual(self.fourth_chunk_length, fourth_length)
+        self.assertEqual(self.first_chunk_length, first_length,
+                         "Incorrect first chunk length")
+        self.assertEqual(self.second_chunk_length, second_length,
+                         "Incorrect second chunk length")
+        self.assertEqual(self.third_chunk_length, third_length,
+                         "Incorrect third chunk length")
+        self.assertEqual(self.fourth_chunk_length, fourth_length,
+                         "Incorrect fourth chunk length")
 
     def test_resulting_audio_have_proper_length(self):
         """
@@ -81,12 +87,16 @@ class TestSplitSpeech(unittest.TestCase):
         self.sample.generate_speech_chunks()
 
         self.sample.extend_silences(one_hundred_percent)
-        self.assertEqual(len(self.sample.resulting_sound),
-                         resulting_length_extended_100_percentage)
+        self.assertEqual(
+            len(self.sample.resulting_sound),
+            resulting_length_extended_100_percentage,
+            r"Resulting audio extended by 100% have incorrect length")
 
         self.sample.extend_silences(two_hundred_percent)
-        self.assertEqual(len(self.sample.resulting_sound),
-                         resulting_length_extended_200_percentage)
+        self.assertEqual(
+            len(self.sample.resulting_sound),
+            resulting_length_extended_200_percentage,
+            r"Resulting audio extended by 200% have incorrect length")
 
     def test_exports_resulting_sound(self):
         """
@@ -100,7 +110,9 @@ class TestSplitSpeech(unittest.TestCase):
 
         self.assertEqual((str(
             self.path_to_output_file), self.path_to_output_file.is_file()),
-                         (str(self.path_to_output_file), True))
+                         (str(self.path_to_output_file), True),
+                         "Can't find exported file.")
+
 
 class TestTooShortSpeech(unittest.TestCase):
 
@@ -111,13 +123,17 @@ class TestTooShortSpeech(unittest.TestCase):
         should be detected. The short sentence is 1053ms long.
         """
         sample = SoundFile("./test_data/sample_with_short_sentence.mp3")
-        minimum_sentence_length = 1200 # milliseconds
+        minimum_sentence_length = 1200  # milliseconds
         number_of_sentences_with_minimum_length = 3
 
         silences = sample.detect_silences()
-        speech_pieces = sample.generate_speech_chunks(minimum_sentence_length=minimum_sentence_length)
+        speech_pieces = sample.generate_speech_chunks(
+            minimum_sentence_length=minimum_sentence_length)
 
-        self.assertEqual(len(speech_pieces), number_of_sentences_with_minimum_length)
+        self.assertEqual(
+            len(speech_pieces), number_of_sentences_with_minimum_length,
+            f"There should be {number_of_sentences_with_minimum_length} sentences with at least {minimum_sentence_length}ms length detected."
+        )
 
 
 if __name__ == "__main__ ":
