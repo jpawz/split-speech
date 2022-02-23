@@ -125,6 +125,13 @@ if __name__ == "__main__":
         help=
         "threshold for silence (dB) (default -50): below this level sound is counted as silence"
     )
+    parser.add_argument(
+        "-e",
+        type=int,
+        default=200,
+        metavar="ms",
+        help="minimum speech length: after sentences shorter than this limit do not add silences"
+    )
 
     args = parser.parse_args()
 
@@ -132,12 +139,13 @@ if __name__ == "__main__":
     output_file = args.output
 
     min_sil_length = args.s
+    min_speech_length = args.e
     sil_percentage = args.p
     sil_threshold = args.t
 
     sound_file = SoundFile(input_file)
     sound_file.detect_silences(minimum_silence_length=min_sil_length,
                                silence_threshold=sil_threshold)
-    sound_file.generate_speech_chunks()
+    sound_file.generate_speech_chunks(minimum_sentence_length=min_speech_length)
     sound_file.extend_silences(percentage_of_speech=sil_percentage)
     sound_file.write_resulting_file(output_file)
