@@ -115,7 +115,7 @@ class TestSplitSpeech(unittest.TestCase):
                          "Can't find exported file.")
 
 
-class TestTooShortSpeech(unittest.TestCase):
+class TestSpecialCases(unittest.TestCase):
 
     def test_ignore_too_short_speech(self):
         """
@@ -136,9 +136,6 @@ class TestTooShortSpeech(unittest.TestCase):
             f"There should be {number_of_sentences_with_minimum_length} sentences with at least {minimum_sentence_length}ms length detected."
         )
 
-
-class TestLeadingAndTrailingSilences(unittest.TestCase):
-
     def test_ignore_leading_silence(self):
         """
         Silence from the beggining and end of the audio should be ignored.
@@ -148,7 +145,27 @@ class TestLeadingAndTrailingSilences(unittest.TestCase):
 
         silences_without_leading_and_trailing = sample.detect_silences()
 
-        self.assertEqual(len(silences_without_leading_and_trailing), 2, "Without leading and trailing, there are two silences in the sample.")
+        self.assertEqual(
+            len(silences_without_leading_and_trailing), 2,
+            "Without leading and trailing, there are two silences in the sample."
+        )
+
+    def test_ignore_too_long_speech_pieces(self):
+        """
+        Test if too long speeches are not extended. Sample data have two sentences:
+        first 5641ms long and second 2997ms long.
+        """
+        sample = SoundFile("./test_data/sample_with_too_long_sent.mp3")
+        first_sentence_length = 5641
+        second_sentence_length = 2997
+        both_sentences_extended = (first_sentence_length +
+                                   second_sentence_length) * 2
+
+        sample.detect_silences()
+        sample.generate_speech_chunks()
+        extended = sample.extend_silences()
+
+        self.assertLess(len(extended), both_sentences_extended)
 
 
 if __name__ == "__main__ ":
