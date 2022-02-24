@@ -163,9 +163,9 @@ class TestSpecialCases(unittest.TestCase):
 
         sample.detect_silences()
         sample.generate_speech_chunks()
-        extended = sample.extend_silences()
+        sample.extend_silences(maximum_sentence_length=5000)
 
-        self.assertLess(len(extended), both_sentences_extended)
+        self.assertLess(len(sample.resulting_sound), both_sentences_extended)
 
 
 if __name__ == "__main__ ":
