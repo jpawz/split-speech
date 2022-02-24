@@ -57,7 +57,9 @@ class SoundFile:
 
         return self.speech_chunks
 
-    def extend_silences(self, percentage_of_speech=100):
+    def extend_silences(self,
+                        percentage_of_speech=100,
+                        maximum_sentence_length=10000):
         """
         Inserts after a speech piece silence of percentage_of_speech length.
         E.g. if the piece is 1500ms length and the percentage_of_speech = 100,
@@ -69,10 +71,20 @@ class SoundFile:
             beggining_of_chunk = self.speech_chunks[i][0]
             end_of_chunk = self.speech_chunks[i][1]
             chunk_length = end_of_chunk - beggining_of_chunk
-            silence_length = chunk_length * percentage_of_speech / 100
-            self.resulting_sound = self.resulting_sound + self.input_file[
-                beggining_of_chunk:end_of_chunk] + AudioSegment.silent(
-                    silence_length)
+            if chunk_length < maximum_sentence_length:
+                silence_length = chunk_length * percentage_of_speech / 100
+                self.resulting_sound = self.resulting_sound + self.input_file[
+                    beggining_of_chunk:end_of_chunk] + AudioSegment.silent(
+                        silence_length)
+            else:
+                its_last_chunk = (len(self.speech_chunks) - 1) == i
+                if its_last_chunk:
+                    self.resulting_sound = self.resulting_sound + self.input_file[
+                        beggining_of_chunk:end_of_chunk]
+                else:
+                    beggining_of_next_chunk = self.speech_chunks[i+1][0]
+                    self.resulting_sound = self.resulting_sound + self.input_file[
+                        beggining_of_chunk:beggining_of_next_chunk]
 
     def write_resulting_file(self, file_name):
         """
