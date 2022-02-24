@@ -82,7 +82,7 @@ class SoundFile:
                     self.resulting_sound = self.resulting_sound + self.input_file[
                         beggining_of_chunk:end_of_chunk]
                 else:
-                    beggining_of_next_chunk = self.speech_chunks[i+1][0]
+                    beggining_of_next_chunk = self.speech_chunks[i + 1][0]
                     self.resulting_sound = self.resulting_sound + self.input_file[
                         beggining_of_chunk:beggining_of_next_chunk]
 
@@ -97,7 +97,8 @@ class SoundFile:
         """
         Remove leading silence from silences list.
         """
-        if self.silences[0][0] == 0:
+        beggining_of_first_silence = self.silences[0][0]
+        if beggining_of_first_silence == 0:
             del self.silences[0]
 
     def delete_trailing_silence(self):
@@ -105,7 +106,8 @@ class SoundFile:
         Remove trailing silence from silences list.
         """
         length_of_input_file = len(self.input_file)
-        if self.silences[-1][1] == length_of_input_file:
+        end_of_last_silence = self.silences[-1][1]
+        if end_of_last_silence == length_of_input_file:
             del self.silences[-1]
 
 
@@ -142,7 +144,8 @@ if __name__ == "__main__":
         type=int,
         default=200,
         metavar="ms",
-        help="minimum speech length: after sentences shorter than this limit do not add silences"
+        help=
+        "minimum speech length: after sentences shorter than this limit do not add silences"
     )
 
     args = parser.parse_args()
@@ -158,6 +161,7 @@ if __name__ == "__main__":
     sound_file = SoundFile(input_file)
     sound_file.detect_silences(minimum_silence_length=min_sil_length,
                                silence_threshold=sil_threshold)
-    sound_file.generate_speech_chunks(minimum_sentence_length=min_speech_length)
+    sound_file.generate_speech_chunks(
+        minimum_sentence_length=min_speech_length)
     sound_file.extend_silences(percentage_of_speech=sil_percentage)
     sound_file.write_resulting_file(output_file)
