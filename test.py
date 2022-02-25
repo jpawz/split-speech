@@ -42,7 +42,7 @@ class TestSplitSpeech(unittest.TestCase):
         Test if finds three silences.
         """
         number_of_silences = 3
-        silences = self.sample.detect_silences()
+        silences = self.sample.detect_silences_manually()
 
         self.assertEqual(
             len(silences), number_of_silences,
@@ -54,7 +54,7 @@ class TestSplitSpeech(unittest.TestCase):
         Test if gets the correct length of speech (not silence). After the chunk
         will be added some length of silence. 
         """
-        silences = self.sample.detect_silences()
+        silences = self.sample.detect_silences_manually()
 
         chunks = self.sample.generate_speech_chunks()
         first_length = chunks[0][1] - chunks[0][0]
@@ -84,7 +84,7 @@ class TestSplitSpeech(unittest.TestCase):
         resulting_length_extended_200_percentage = (
             all_chunks_length * two_hundred_percent / 100) + all_chunks_length
 
-        self.sample.detect_silences()
+        self.sample.detect_silences_manually()
         self.sample.generate_speech_chunks()
 
         self.sample.extend_silences(one_hundred_percent)
@@ -103,7 +103,7 @@ class TestSplitSpeech(unittest.TestCase):
         """
         Test if resulting sound is exported to file.
         """
-        self.sample.detect_silences()
+        self.sample.detect_silences_manually()
         self.sample.generate_speech_chunks()
         self.sample.extend_silences()
 
@@ -127,7 +127,7 @@ class TestSpecialCases(unittest.TestCase):
         minimum_sentence_length = 1200  # milliseconds
         number_of_sentences_with_minimum_length = 3
 
-        silences = sample.detect_silences()
+        silences = sample.detect_silences_manually()
         speech_pieces = sample.generate_speech_chunks(
             minimum_sentence_length=minimum_sentence_length)
 
@@ -143,7 +143,7 @@ class TestSpecialCases(unittest.TestCase):
         """
         sample = SoundFile("./test_data/sample_lead_trail_sil.mp3")
 
-        silences_without_leading_and_trailing = sample.detect_silences()
+        silences_without_leading_and_trailing = sample.detect_silences_manually()
 
         self.assertEqual(
             len(silences_without_leading_and_trailing), 2,
@@ -161,7 +161,7 @@ class TestSpecialCases(unittest.TestCase):
         both_sentences_extended = (first_sentence_length +
                                    second_sentence_length) * 2
 
-        sample.detect_silences()
+        sample.detect_silences_manually()
         sample.generate_speech_chunks()
         sample.extend_silences(maximum_sentence_length=5000)
 
