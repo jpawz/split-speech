@@ -36,6 +36,7 @@ class SoundFile:
         """
         Try to detect the silences automatically. It can take more time than manual detection.
         """
+        sample = get_20s_from_the_middle()
         # 1. take a 20seconds sample from the middle of the recording
         # 2. start searching for silences starting from T=-60 threshold and 100ms silence length
         # 3. count number of detected silences
@@ -124,6 +125,19 @@ class SoundFile:
         end_of_last_silence = self.silences[-1][1]
         if end_of_last_silence == length_of_input_file:
             del self.silences[-1]
+
+    def get_20s_from_the_middle(self):
+        """
+        Returns a 20s sample.
+        """
+        length = len(self.input_file)
+        twenty_seconds = 20_000
+        ten_seconds = 10_000
+        if length <= twenty_seconds:
+            return self.input_file
+        else:
+            middle = int(length / 2)
+            return self.input_file[middle - ten_seconds:middle + ten_seconds]
 
 
 if __name__ == "__main__":

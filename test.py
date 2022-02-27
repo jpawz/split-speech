@@ -7,6 +7,8 @@ Length of the sample.mp3 is 7628ms.
 import os
 import unittest
 import pathlib
+from unittest.mock import patch
+from unittest.mock import MagicMock
 from pydub import AudioSegment
 from pydub.silence import detect_silence
 from split_speech import SoundFile
@@ -143,7 +145,8 @@ class TestSpecialCases(unittest.TestCase):
         """
         sample = SoundFile("./test_data/sample_lead_trail_sil.mp3")
 
-        silences_without_leading_and_trailing = sample.detect_silences_manually()
+        silences_without_leading_and_trailing = sample.detect_silences_manually(
+        )
 
         self.assertEqual(
             len(silences_without_leading_and_trailing), 2,
@@ -166,6 +169,21 @@ class TestSpecialCases(unittest.TestCase):
         sample.extend_silences(maximum_sentence_length=5000)
 
         self.assertLess(len(sample.resulting_sound), both_sentences_extended)
+
+
+class TestAutomode(unittest.TestCase):
+
+    @patch("split_speech.AudioSegment")
+    def test_get_20_seconds(self, AudioSegment):
+        """
+        Check if it takes 20s of sample.
+        """
+        AudioSegment.from_mp3.return_value = list(range(50_000))
+        sound_file = SoundFile("mp3_file")
+
+        sample = sound_file.get_20s_from_the_middle()
+
+        self.assertEqual(len(sample), 20_000)
 
 
 if __name__ == "__main__ ":
