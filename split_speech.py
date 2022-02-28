@@ -36,11 +36,13 @@ class SoundFile:
         """
         Try to detect the silences automatically. It can take more time than manual detection.
         """
-        sample = get_20s_from_the_middle()
         # 1. take a 20seconds sample from the middle of the recording
-        # 2. start searching for silences starting from T=-60 threshold and 100ms silence length
-        # 3. count number of detected silences
-        # 4. if number of silences is bellow 10 go to point 2 with T=T-1
+        sample = get_20s_from_the_middle()
+        # 2. start searching for silences starting from T=2*dBFS threshold and 100ms silence length
+        threshold = 2 * int(self.input_file.dBFS)
+
+        threshold = find_threshold_in_sample(threshold, sample)
+
         # 5. analyze the whole recording for silences with T threshold
         # 6. analyze the speech chunks if they are:
         # a. too short then join it with next/previous sentenced based on the silence length (if
@@ -138,6 +140,23 @@ class SoundFile:
         else:
             middle = int(length / 2)
             return self.input_file[middle - ten_seconds:middle + ten_seconds]
+
+    def find_threshold_in_sample(self, initial_threshold, sample):
+        """
+        Find threshold for silence in the sample starting with initial_threshold value.
+        """
+        threshold = initial_threshold
+        for i in range(0, -10, -2):
+            sample_silences = detect_silence(sample,
+                                             min_silence_len=100,
+                                             silence_thresh=threshold + i)
+            # 3. count number of detected silences
+            number_of_silences_in_sample = len(sample_silences)
+            # 4. if number of silences isn't between 8 and 16 go to point 2 with T=T-2
+            if 8 <= number_of_silences_in_sample <= 16:
+                threshold += i
+                break
+        return threshold
 
 
 if __name__ == "__main__":

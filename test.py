@@ -185,6 +185,32 @@ class TestAutomode(unittest.TestCase):
 
         self.assertEqual(len(sample), 20_000)
 
+    @patch("split_speech.detect_silence")
+    @patch("split_speech.AudioSegment")
+    def test_find_threshold_45_in_sample(self, AudioSegment, detect_silence):
+        """
+        Test if find_threshold_in_sample method finds proper threshold level (-45).
+        It starts with threshold=-41 and after three steps it should  find
+        threshold=-45
+        """
+        AudioSegment.from_mp3.return_value = list(range(50_000))
+        sound_file = SoundFile("mp3_file")
+        too_less_silences = list(range(1))
+        too_much_silences = list(range(20))
+        correct_number_of_silences = list(range(10))
+        detect_silence.side_effect = (too_less_silences, too_much_silences,
+                                      correct_number_of_silences)
+        initial_threshold = -41
+        some_sample = list(range(20))
+
+        threshold = sound_file.find_threshold_in_sample(
+            initial_threshold, some_sample)
+
+        self.assertEqual(3, detect_silence.call_count,
+                         "It should be called 3 times")
+        self.assertEqual(-45, threshold,
+                         "Detected threshold should equal to -45")
+
 
 if __name__ == "__main__ ":
     unittest.main()
