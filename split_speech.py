@@ -34,7 +34,7 @@ class SoundFile:
 
     def detect_silences_automatically(self):
         """
-        Try to detect the silences automatically. It can take more time than manual detection.
+        Try to detect the silences automatically.
         """
         # 1. take a 20seconds sample from the middle of the recording
         sample = get_20s_from_the_middle()
@@ -44,11 +44,14 @@ class SoundFile:
         threshold = find_threshold_in_sample(threshold, sample)
 
         # 5. analyze the whole recording for silences with T threshold
-        # 6. analyze the speech chunks if they are:
-        # a. too short then join it with next/previous sentenced based on the silence length (if
-        #    shorter silence is before join with the previous part)
-        # b. too long: try to searching for silences with different threshold (keep the threshold value
-        #    for contingent subsequent too long pieces)
+        minimum_silence_length = 100
+        self.silences = detect_silence(self.input_file, minimum_silence_length,
+                                       threshold)
+        self.delete_leading_silence()
+        self.delete_trailing_silence()
+
+        minimum_sentence_length = 800
+        self.generate_speech_chunks(minimum_sentence_length)
 
     def generate_speech_chunks(self, minimum_sentence_length=100):
         """

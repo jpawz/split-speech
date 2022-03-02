@@ -5,12 +5,13 @@ Length of the sample.mp3 is 7628ms.
 """
 
 import os
-import unittest
 import pathlib
-from unittest.mock import patch
-from unittest.mock import MagicMock
+import unittest
+from unittest.mock import MagicMock, patch
+
 from pydub import AudioSegment
 from pydub.silence import detect_silence
+
 from split_speech import SoundFile
 
 
