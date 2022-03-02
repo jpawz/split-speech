@@ -36,14 +36,12 @@ class SoundFile:
         """
         Try to detect the silences automatically.
         """
-        # 1. take a 20seconds sample from the middle of the recording
-        sample = get_20s_from_the_middle()
-        # 2. start searching for silences starting from T=2*dBFS threshold and 100ms silence length
+        sample = self.get_20s_from_the_middle()
+
         threshold = 2 * int(self.input_file.dBFS)
 
-        threshold = find_threshold_in_sample(threshold, sample)
+        threshold = self.find_threshold_in_sample(threshold, sample)
 
-        # 5. analyze the whole recording for silences with T threshold
         minimum_silence_length = 100
         self.silences = detect_silence(self.input_file, minimum_silence_length,
                                        threshold)
@@ -52,6 +50,8 @@ class SoundFile:
 
         minimum_sentence_length = 800
         self.generate_speech_chunks(minimum_sentence_length)
+
+        self.extend_silences(100, 5000)
 
     def generate_speech_chunks(self, minimum_sentence_length=100):
         """
@@ -164,7 +164,7 @@ class SoundFile:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog='split-speech',
+        prog='split_speech',
         description='extends silences to give time for repetition')
     parser.add_argument("input", help="input mp3 file")
     parser.add_argument("output", help="resulting mp3 file")
@@ -204,15 +204,20 @@ if __name__ == "__main__":
     input_file = args.input
     output_file = args.output
 
-    min_sil_length = args.s
-    min_speech_length = args.e
-    sil_percentage = args.p
-    sil_threshold = args.t
-
     sound_file = SoundFile(input_file)
-    sound_file.detect_silences_manually(minimum_silence_length=min_sil_length,
-                                        silence_threshold=sil_threshold)
-    sound_file.generate_speech_chunks(
-        minimum_sentence_length=min_speech_length)
-    sound_file.extend_silences(percentage_of_speech=sil_percentage)
+
+    if len(sys.argv) == 3:
+        sound_file.detect_silences_automatically()
+    else:
+        min_sil_length = args.s
+        min_speech_length = args.e
+        sil_percentage = args.p
+        sil_threshold = args.t
+
+        sound_file.detect_silences_manually(
+            minimum_silence_length=min_sil_length,
+            silence_threshold=sil_threshold)
+        sound_file.generate_speech_chunks(
+            minimum_sentence_length=min_speech_length)
+        sound_file.extend_silences(percentage_of_speech=sil_percentage)
     sound_file.write_resulting_file(output_file)
