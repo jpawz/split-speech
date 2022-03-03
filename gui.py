@@ -2,15 +2,21 @@
 Graphical User Interface for split_speech.py app.
 """
 
+import tkinter as tk
 from tkinter import *
+from tkinter import filedialog
 
-class Root(Tk):
-    def __init__(self):
-        super(Root, self).__init__()
+root = tk.Tk()
+root.title("Split Speech")
+root.geometry("300x300")
 
-        self.title("Split Speech")
-        self.minsize(500, 400)
 
-root = Root()
-root.mainloop()
+def add_files():
+    filetypes = (("mp3 files", "*.mp3"),)
+    filenames = filedialog.askopenfiles(mode='r', filetypes=filetypes)
 
+
+button = tk.Button(root, text="Add files", command=lambda: add_files())
+
+button.grid(row=1, column=0)
+tk.mainloop()
