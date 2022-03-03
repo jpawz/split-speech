@@ -6,8 +6,9 @@ for pronunciation exercises (repeating speech) for
 foreign language practice.
 """
 
-import sys
 import argparse
+import sys
+
 from pydub import AudioSegment
 from pydub.silence import detect_silence
 
@@ -153,9 +154,7 @@ class SoundFile:
             sample_silences = detect_silence(sample,
                                              min_silence_len=100,
                                              silence_thresh=threshold + i)
-            # 3. count number of detected silences
             number_of_silences_in_sample = len(sample_silences)
-            # 4. if number of silences isn't between 8 and 16 go to point 2 with T=T-2
             if 8 <= number_of_silences_in_sample <= 16:
                 threshold += i
                 break
