@@ -41,7 +41,7 @@ class SoundFile:
 
         threshold = 2 * int(self.input_file.dBFS)
 
-        threshold = find_threshold_in_sample(threshold, sample)
+        threshold = self.find_threshold_in_sample(threshold, sample)
 
         minimum_silence_length = 100
         self.silences = detect_silence(self.input_file, minimum_silence_length,
