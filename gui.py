@@ -2,6 +2,7 @@
 Graphical User Interface for split_speech.py app.
 """
 
+import concurrent.futures
 import os
 import tkinter as tk
 from tkinter import *
@@ -35,18 +36,21 @@ load_files_button = tk.Button(root,
 load_files_button.grid(row=1, column=0)
 
 
-def extend_silences():
-    for filepath in filepaths:
-        sound_file = SoundFile(filepath)
-        sound_file.detect_silences_automatically()
-        resulting_filename = filepath[:-4] + "_ext.mp3"
-        sound_file.write_resulting_file(resulting_filename)
+def extend_silences(filepath):
+    sound_file = SoundFile(filepath)
+    sound_file.detect_silences_automatically()
+    resulting_filename = filepath[:-4] + "_ext.mp3"
+    sound_file.write_resulting_file(resulting_filename)
+
+
+def process_files():
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for filepath in filepaths:
+            executor.submit(extend_silences, filepath)
     tk.messagebox.showinfo(message="Done!")
 
 
-extend_silences_button = tk.Button(root,
-                                   text="Start",
-                                   command=lambda: extend_silences())
+extend_silences_button = tk.Button(root, text="Start", command=lambda: process_files())
 extend_silences_button.grid(row=3, column=0)
 
 tk.mainloop()
