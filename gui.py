@@ -14,10 +14,11 @@ root = tk.Tk()
 root.title("Split Speech")
 root.geometry("300x300")
 root.columnconfigure(0, weight=1)
+root.rowconfigure(1, weight=1)
 
 filepaths = ()
 listbox = tk.Listbox(root)
-listbox.grid(row=2, column=0, sticky="nwes")
+listbox.grid(row=1, column=0, sticky="nwes")
 
 
 def add_files():
@@ -33,7 +34,7 @@ def add_files():
 load_files_button = tk.Button(root,
                               text="Add files",
                               command=lambda: add_files())
-load_files_button.grid(row=1, column=0)
+load_files_button.grid(row=0, column=0)
 
 
 def extend_silences(filepath):
@@ -50,7 +51,9 @@ def process_files():
     tk.messagebox.showinfo(message="Done!")
 
 
-extend_silences_button = tk.Button(root, text="Start", command=lambda: process_files())
-extend_silences_button.grid(row=3, column=0)
+extend_silences_button = tk.Button(root,
+                                   text="Start",
+                                   command=lambda: process_files())
+extend_silences_button.grid(row=2, column=0, sticky="s")
 
 tk.mainloop()
