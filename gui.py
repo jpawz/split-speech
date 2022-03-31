@@ -16,19 +16,24 @@ root.geometry("300x300")
 root.columnconfigure(0, weight=1)
 root.rowconfigure(1, weight=1)
 
-filepaths = ()
+filepaths = []
 listbox = tk.Listbox(root)
 listbox.grid(row=1, column=0, sticky="nwes")
 
 
+def add_if_not_already_in(paths):
+    global filepaths
+    for file in paths:
+        if file not in filepaths:
+            filepaths.append(file)
+
 def add_files():
     global filepaths
     filetypes = (("mp3 files", "*.mp3"), )
-    filepaths = filedialog.askopenfilenames(filetypes=filetypes)
+    add_if_not_already_in(filedialog.askopenfilenames(filetypes=filetypes))
     listbox.delete(0, END)
     for file in filepaths:
-        filename = os.path.basename(file)
-        listbox.insert(END, filename)
+        listbox.insert(END, file)
 
 
 load_files_button = tk.Button(root,
